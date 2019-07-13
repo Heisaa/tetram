@@ -44,4 +44,12 @@ class TTetramino extends Tetramino {
         [this.x, this.y + squareDistance],
         [this.x - squareDistance, this.y]];
     }
+
+    updatePosition(squareDistance, field) {
+
+        this.coords = [[this.x, this.y],
+        [this.x + squareDistance, this.y],
+        [this.x, this.y + squareDistance],
+        [this.x - squareDistance, this.y]];
+    }
 }

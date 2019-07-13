@@ -17,7 +17,7 @@ let tetraminos = [];
 let fallTimer = 1;
 let fallSpeed = 20;
 
-let scale, squareHeight, squareDistance; 
+let scale, squareHeight, squareDistance;
 
 //p5 functions
 function setup() {
@@ -39,19 +39,19 @@ function draw() {
 
     //Tetraminos
     //Create new tetramino
-    if (tetraminos[tetraminos.length-1] == undefined || tetraminos[tetraminos.length-1].falling == false) {
-        tetraminos.push(new TTetramino(field.x + 1 + (squareDistance * 4), field.y + 1, squareDistance));
+    if (tetraminos[tetraminos.length - 1] == undefined || tetraminos[tetraminos.length - 1].falling == false) {
+        tetraminos.push(new TTetramino(field.x + 1 + (squareDistance * 4),field.y + 1, squareDistance));
     }
-    
+
 
     //Move down
     if (fallTimer >= fallSpeed) {
-        if (spaceFree(tetraminos[tetraminos.length-1], squareDistance)) {
-            tetraminos[tetraminos.length-1].moveDown(squareDistance);
-            console.log(spaceFree(tetraminos[tetraminos.length-1]));
-            
+        if (spaceFree(tetraminos[tetraminos.length - 1], squareDistance)) {
+            tetraminos[tetraminos.length - 1].moveDown(squareDistance);
+            console.log(spaceFree(tetraminos[tetraminos.length - 1]));
+
         } else {
-            tetraminos[tetraminos.length-1].falling = false;
+            tetraminos[tetraminos.length - 1].falling = false;
         }
         fallTimer = 1;
     }
@@ -69,6 +69,8 @@ function draw() {
 }
 
 function windowResized() {
+    let oldField = field;
+
     resizeCanvas(windowWidth, windowHeight);
 
     scale = (height / 250);
@@ -79,6 +81,11 @@ function windowResized() {
     field.width = field.height / 2;
     field.x = width / 2 - field.width / 2;
     field.y = 10;
+
+    tetraminos.forEach(element => {
+        element.updatePosition(squareDistance, oldField, field);
+    });
+
 }
 
 //other function
