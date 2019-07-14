@@ -32,24 +32,30 @@ class TTetramino extends Tetramino {
     constructor(x, y, squareDistance) {
         super(x, y);
 
-        this.coords =   [[this.x, this.y],
-                        [this.x + squareDistance, this.y],
-                        [this.x, this.y + squareDistance],
-                        [this.x - squareDistance, this.y]];
+        this.coords = [
+            [this.x, this.y],
+            [this.x + squareDistance, this.y],
+            [this.x, this.y + squareDistance],
+            [this.x - squareDistance, this.y]
+        ];
     }
 
     update(squareDistance) {
-        this.coords = [[this.x, this.y],
-        [this.x + squareDistance, this.y],
-        [this.x, this.y + squareDistance],
-        [this.x - squareDistance, this.y]];
+
+        this.coords = [
+            [this.x, this.y],
+            [this.x + squareDistance, this.y],
+            [this.x, this.y + squareDistance],
+            [this.x - squareDistance, this.y]
+        ];
     }
 
-    updatePosition(squareDistance, field) {
+    updatePosition(oldSquareDistance, squareDistance, oldField, field) {
 
-        this.coords = [[this.x, this.y],
-        [this.x + squareDistance, this.y],
-        [this.x, this.y + squareDistance],
-        [this.x - squareDistance, this.y]];
+        let xCells = (this.x - (oldField.x + 1)) / oldSquareDistance;
+        let yCells = (this.y - (oldField.y + 1)) / oldSquareDistance;
+
+        this.x = (field.x + 1) + (xCells * squareDistance);
+        this.y = (field.y + 1) + (yCells * squareDistance);
     }
 }
