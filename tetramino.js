@@ -3,7 +3,7 @@ class Tetramino {
         this.x = x;
         this.y = y;
         this.falling = true;
-        this.rotationState = 1;
+        this.rotationState = 0;
     }
 
     moveDown(gridSize) {
@@ -19,8 +19,8 @@ class Tetramino {
     }
 
     draw(squareHeight) {
-        strokeWeight(1)
-        stroke(255, 255, 255)
+        strokeWeight(0)
+        //stroke(255, 255, 255)
         fill(255, 0, 0)
 
         this.coords.forEach(element => {
@@ -38,7 +38,11 @@ class Tetramino {
     }
 
     rotation() {
-        
+        if (this.rotationState >= 3) {
+            this.rotationState = 0
+        } else {
+            this.rotationState += 1;
+        }
     }
 }
 
@@ -52,24 +56,63 @@ class TTetramino extends Tetramino {
             [this.x, this.y + squareDistance],
             [this.x - squareDistance, this.y]
         ];
-    }
 
-    update(squareDistance) {
-
-        if (this.rotationState == 1) {
-            this.coords = [
+        this.rotations = [
+            [
                 [this.x, this.y],
                 [this.x + squareDistance, this.y],
                 [this.x, this.y + squareDistance],
                 [this.x - squareDistance, this.y]
-            ];
-        } else if (this.rotationState == 2) {
-            this.coords = [
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y + squareDistance]
+            ]
+        ];
+    }
+
+    update(squareDistance) {
+        this.rotations = [
+            [
                 [this.x, this.y],
                 [this.x + squareDistance, this.y],
-                [this.x, this.y - squareDistance],
+                [this.x, this.y + squareDistance],
                 [this.x - squareDistance, this.y]
-            ];
-        }
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y + squareDistance]
+            ]
+        ];
+
+        this.coords = this.rotations[this.rotationState];
     }
 }
