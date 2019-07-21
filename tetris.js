@@ -15,11 +15,17 @@ const field = {
 
 let tetraminos = [];
 let fallTimer = 1;
-let fallSpeed = 20;
+let fallSpeed = 40;
+let resetFallSpeed = fallSpeed;
 
 let scale, squareHeight, squareDistance;
 
-//p5 functions
+/*
+*       p5 functions
+*
+*
+*/
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
@@ -46,10 +52,8 @@ function draw() {
 
     //Move down
     if (fallTimer >= fallSpeed) {
-        if (spaceFree(tetraminos[tetraminos.length - 1], squareDistance)) {
+        if (downFree(tetraminos[tetraminos.length - 1], squareDistance)) {
             tetraminos[tetraminos.length - 1].moveDown(squareDistance);
-            console.log(tetraminos[tetraminos.length - 1].y);
-
         } else {
             tetraminos[tetraminos.length - 1].falling = false;
         }
@@ -59,6 +63,32 @@ function draw() {
     //Increase timer
     fallTimer += 1;
 
+}
+
+function keyPressed() {
+    if (keyCode === DOWN_ARROW) {
+        fallSpeed = 10;
+    }
+    if (keyCode === LEFT_ARROW && leftFree(tetraminos[tetraminos.length-1], squareDistance)) {
+        tetraminos[tetraminos.length-1].moveLeft(squareDistance);
+        tetraminos[tetraminos.length-1].update(squareDistance);
+
+    }
+    if (keyCode === RIGHT_ARROW && rightFree(tetraminos[tetraminos.length-1], squareDistance)) {
+        tetraminos[tetraminos.length-1].moveRight(squareDistance);
+        tetraminos[tetraminos.length-1].update(squareDistance);
+    }
+    if (keyCode === 88) {
+        tetraminos[tetraminos.length-1].rotation();
+        //tetraminos[tetraminos.length-1].update(squareDistance);
+    }
+
+}
+
+function keyReleased() {
+    if (keyCode === DOWN_ARROW) {
+        fallSpeed = resetFallSpeed;
+    }
 }
 
 function windowResized() {
@@ -90,15 +120,15 @@ function scaleField() {
 
     field.height = (squareHeight * 20) + 21;
     field.width = field.height / 2;
-    field.x = 10;//width / 2 - field.width / 2;
+    field.x = width / 2 - field.width / 2;
     field.y = 10;
 }
 
-function spaceFree(tet, squareDistance) {
+function downFree(fallingTetramino, squareDistance) {
     let isSpaceFee = true;
 
     //Check field
-    tet.coords.forEach(element => {
+    fallingTetramino.coords.forEach(element => {
         if (element[1] + squareDistance + 1 >= field.y + field.height) {
             isSpaceFee = false;
         }
@@ -107,9 +137,12 @@ function spaceFree(tet, squareDistance) {
         tetraminos.forEach(tetramino => {
             if (!tetramino.falling) {
                 tetramino.coords.forEach(coord => {
-                    if (element[1] + squareDistance * 1.5 > coord[1] && element[1] + squareDistance * 1.5 < coord[1] + squareDistance) {
+                    if (element[1] + squareDistance * 1.5 > coord[1] && 
+                        element[1] + squareDistance * 1.5 < coord[1] + squareDistance &&
+                        element[0] - squareDistance * 0.2 < coord[0] &&
+                        element[0] + squareDistance * 0.2 > coord[0]) {
+                        
                         isSpaceFee = false;
-                        //Fix condition if stuck under block
                     }
                 });
             }
@@ -117,4 +150,58 @@ function spaceFree(tet, squareDistance) {
     });
 
     return isSpaceFee;
+}
+
+function rightFree(fallingTetramino, squareDistance) {
+    let isRightFree = true;
+
+    fallingTetramino.coords.forEach(element => {
+        if (element[0] + squareDistance + 1 >= field.x + field.width) {
+            isRightFree = false;
+        }
+
+        //Check y for tetraminos
+        tetraminos.forEach(tetramino => {
+            if (!tetramino.falling) {
+                tetramino.coords.forEach(coord => {
+                    if (element[0] + squareDistance * 1.5 > coord[0] && 
+                        element[0] + squareDistance * 1.5 < coord[0] + squareDistance &&
+                        element[1] - squareDistance * 0.2 < coord[1] &&
+                        element[1] + squareDistance * 0.2 > coord[1]) {
+                        
+                        isRightFree = false;
+                    }
+                });
+            }
+        });
+    });
+    
+    return isRightFree;
+}
+
+function leftFree(fallingTetramino, squareDistance) {
+    let isLeftFree = true;
+
+    fallingTetramino.coords.forEach(element => {
+        if (element[0] - 1 <= field.x) {
+            isLeftFree = false;
+        }
+
+        //Check y for tetraminos
+        tetraminos.forEach(tetramino => {
+            if (!tetramino.falling) {
+                tetramino.coords.forEach(coord => {
+                    if (element[0] - squareDistance * 0.5 > coord[0] && 
+                        element[0] - squareDistance * 0.5 < coord[0] + squareDistance &&
+                        element[1] - squareDistance * 0.2 < coord[1] &&
+                        element[1] + squareDistance * 0.2 > coord[1]) {
+                        
+                        isLeftFree = false;
+                    }
+                });
+            }
+        });
+    });
+    
+    return isLeftFree;
 }

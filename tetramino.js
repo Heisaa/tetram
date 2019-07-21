@@ -3,6 +3,7 @@ class Tetramino {
         this.x = x;
         this.y = y;
         this.falling = true;
+        this.rotationState = 1;
     }
 
     moveDown(gridSize) {
@@ -26,6 +27,19 @@ class Tetramino {
             square(element[0], element[1], squareHeight)
         });
     }
+
+    updatePosition(oldSquareDistance, squareDistance, oldField, field) {
+
+        let xCells = (this.x - (oldField.x + 1)) / oldSquareDistance;
+        let yCells = (this.y - (oldField.y + 1)) / oldSquareDistance;
+
+        this.x = (field.x + 1) + (xCells * squareDistance);
+        this.y = (field.y + 1) + (yCells * squareDistance);
+    }
+
+    rotation() {
+        
+    }
 }
 
 class TTetramino extends Tetramino {
@@ -42,20 +56,20 @@ class TTetramino extends Tetramino {
 
     update(squareDistance) {
 
-        this.coords = [
-            [this.x, this.y],
-            [this.x + squareDistance, this.y],
-            [this.x, this.y + squareDistance],
-            [this.x - squareDistance, this.y]
-        ];
-    }
-
-    updatePosition(oldSquareDistance, squareDistance, oldField, field) {
-
-        let xCells = (this.x - (oldField.x + 1)) / oldSquareDistance;
-        let yCells = (this.y - (oldField.y + 1)) / oldSquareDistance;
-
-        this.x = (field.x + 1) + (xCells * squareDistance);
-        this.y = (field.y + 1) + (yCells * squareDistance);
+        if (this.rotationState == 1) {
+            this.coords = [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ];
+        } else if (this.rotationState == 2) {
+            this.coords = [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x - squareDistance, this.y]
+            ];
+        }
     }
 }
