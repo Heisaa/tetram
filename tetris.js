@@ -56,6 +56,7 @@ function draw() {
             tetraminos[tetraminos.length - 1].moveDown(squareDistance);
         } else {
             tetraminos[tetraminos.length - 1].falling = false;
+            //BOOM TETRIS
         }
         fallTimer = 1;
     }
@@ -78,9 +79,12 @@ function keyPressed() {
         tetraminos[tetraminos.length-1].moveRight(squareDistance);
         tetraminos[tetraminos.length-1].update(squareDistance);
     }
-    if (keyCode === 88) {
-        tetraminos[tetraminos.length-1].rotation();
+    if (keyCode === 88 && rotationRightFree(tetraminos[tetraminos.length-1], squareDistance)) {
+        tetraminos[tetraminos.length-1].rotationRight();
         //tetraminos[tetraminos.length-1].update(squareDistance);
+    }
+    if (keyCode === 90) {
+        tetraminos[tetraminos.length-1].rotationLeft();
     }
 
 }
@@ -204,4 +208,20 @@ function leftFree(fallingTetramino, squareDistance) {
     });
     
     return isLeftFree;
+}
+
+function rotationRightFree(fallingTetramino, squareDistance) {
+    let rotationFree = true;
+    let rotatedCoords = fallingTetramino.rotatedCoordsRight();
+
+    console.log(rotatedCoords);
+    console.log(fallingTetramino.coords);
+
+    rotatedCoords.forEach(element => {
+        if (element[0] > field.x + field.width) {
+            rotationFree = false;
+        }
+    });
+
+    return rotationFree;
 }

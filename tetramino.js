@@ -4,6 +4,7 @@ class Tetramino {
         this.y = y;
         this.falling = true;
         this.rotationState = 0;
+        this.rotations;
     }
 
     moveDown(gridSize) {
@@ -37,12 +38,25 @@ class Tetramino {
         this.y = (field.y + 1) + (yCells * squareDistance);
     }
 
-    rotation() {
+    rotationRight() {
         if (this.rotationState >= 3) {
             this.rotationState = 0
         } else {
             this.rotationState += 1;
         }
+    }
+    rotationLeft() {
+        if (this.rotationState <= 0) {
+            this.rotationState = 3
+        } else {
+            this.rotationState -= 1;
+        }
+    }
+    rotatedCoordsRight() {
+        this.rotationRight();
+        let coordsRight = this.rotations[this.rotationState];
+        this.rotationLeft();
+        return coordsRight;
     }
 }
 
@@ -50,39 +64,7 @@ class TTetramino extends Tetramino {
     constructor(x, y, squareDistance) {
         super(x, y);
 
-        this.coords = [
-            [this.x, this.y],
-            [this.x + squareDistance, this.y],
-            [this.x, this.y + squareDistance],
-            [this.x - squareDistance, this.y]
-        ];
-
-        this.rotations = [
-            [
-                [this.x, this.y],
-                [this.x + squareDistance, this.y],
-                [this.x, this.y + squareDistance],
-                [this.x - squareDistance, this.y]
-            ],
-            [
-                [this.x, this.y],
-                [this.x, this.y - squareDistance],
-                [this.x, this.y + squareDistance],
-                [this.x - squareDistance, this.y]
-            ],
-            [
-                [this.x, this.y],
-                [this.x, this.y - squareDistance],
-                [this.x + squareDistance, this.y],
-                [this.x - squareDistance, this.y]
-            ],
-            [
-                [this.x, this.y],
-                [this.x, this.y - squareDistance],
-                [this.x + squareDistance, this.y],
-                [this.x, this.y + squareDistance]
-            ]
-        ];
+        this.update(squareDistance);
     }
 
     update(squareDistance) {
