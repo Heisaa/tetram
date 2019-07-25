@@ -41,13 +41,29 @@ function draw() {
     //Create new tetramino
     if (tetraminos[tetraminos.length - 1] == undefined || tetraminos[tetraminos.length - 1].falling == false) {
         tetraminos.push(new TTetramino(field.x + 1 + (squareDistance * 1), field.y + 1, squareDistance));
+        
+        //Check if colliding at spawn
+        tetraminos[tetraminos.length - 1].coords.forEach(element => {
+            tetraminos.forEach(tetramino => {
+                if (!tetramino.falling) {
+                    tetramino.coords.forEach(coord => {
+                        if (element[0] + squareDistance * 0.2 > coord[0] && 
+                            element[0] - squareDistance * 0.2 < coord[0] &&
+                            element[1] - squareDistance * 0.2 < coord[1] &&
+                            element[1] + squareDistance * 0.2 > coord[1]) {
+                                tetraminos = [];
+                            }
+                    });
+                }
+            });
+        });
     }
 
     //Update position
     //Draw tetramino
     tetraminos.forEach(element => {
         element.update(squareDistance);
-        element.draw(squareHeight);
+        element.draw(squareHeight, field);
     });
 
     //Move down
@@ -83,7 +99,7 @@ function keyPressed() {
         tetraminos[tetraminos.length-1].rotationRight();
         //tetraminos[tetraminos.length-1].update(squareDistance);
     }
-    if (keyCode === 90) {
+    if (keyCode === 90 && rotationLeftFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].rotationLeft();
     }
 
@@ -214,13 +230,53 @@ function rotationRightFree(fallingTetramino, squareDistance) {
     let rotationFree = true;
     let rotatedCoords = fallingTetramino.rotatedCoordsRight();
 
-    console.log(rotatedCoords);
-    console.log(fallingTetramino.coords);
-
     rotatedCoords.forEach(element => {
-        if (element[0] > field.x + field.width) {
+        if (element[0] > field.x + field.width || 
+            element[0] < field.x) {
             rotationFree = false;
         }
+
+        tetraminos.forEach(tetramino => {
+            if (!tetramino.falling) {
+                tetramino.coords.forEach(coord => {
+                    if (element[0] + squareDistance * 0.2 > coord[0] && 
+                        element[0] - squareDistance * 0.2 < coord[0] &&
+                        element[1] - squareDistance * 0.2 < coord[1] &&
+                        element[1] + squareDistance * 0.2 > coord[1]) {
+                        
+                        rotationFree = false;
+                    }
+                });
+            }
+        });
+    });
+
+    return rotationFree;
+}
+
+function rotationLeftFree(fallingTetramino, squareDistance) {
+    let rotationFree = true;
+    let rotatedCoords = fallingTetramino.rotatedCoordsLeft();
+
+    rotatedCoords.forEach(element => {
+        if (element[0] > field.x + field.width || 
+            element[0] < field.x) {
+            rotationFree = false;
+        }
+
+        tetraminos.forEach(tetramino => {
+            if (!tetramino.falling) {
+                tetramino.coords.forEach(coord => {
+                    if (element[0] + squareDistance * 0.2 > coord[0] && 
+                        element[0] - squareDistance * 0.2 < coord[0] &&
+                        element[1] - squareDistance * 0.2 < coord[1] &&
+                        element[1] + squareDistance * 0.2 > coord[1]) {
+                        
+                        rotationFree = false;
+                    }
+                });
+            }
+        });
     });
 
     return rotationFree;

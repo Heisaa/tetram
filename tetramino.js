@@ -19,13 +19,15 @@ class Tetramino {
         this.x -= gridSize;
     }
 
-    draw(squareHeight) {
+    draw(squareHeight, field) {
         strokeWeight(0)
         //stroke(255, 255, 255)
         fill(255, 0, 0)
 
         this.coords.forEach(element => {
-            square(element[0], element[1], squareHeight)
+            if (element[0] > field.x && element[1] > field.y) {
+                square(element[0], element[1], squareHeight)
+            }
         });
     }
 
@@ -57,6 +59,12 @@ class Tetramino {
         let coordsRight = this.rotations[this.rotationState];
         this.rotationLeft();
         return coordsRight;
+    }
+    rotatedCoordsLeft() {
+        this.rotationLeft();
+        let coordsLeft = this.rotations[this.rotationState];
+        this.rotationRight();
+        return coordsLeft;
     }
 }
 
