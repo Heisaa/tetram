@@ -37,10 +37,9 @@ function draw() {
 
     field.draw();
 
-    //Tetraminos
     //Create new tetramino
     if (tetraminos[tetraminos.length - 1] == undefined || tetraminos[tetraminos.length - 1].falling == false) {
-        tetraminos.push(new TTetramino(field.x + 1 + (squareDistance * 1), field.y + 1, squareDistance));
+        spawnTetramino(field.x + 1 + (squareDistance * 5), field.y + 1, squareDistance);
         
         //Check if colliding at spawn
         tetraminos[tetraminos.length - 1].coords.forEach(element => {
@@ -51,6 +50,7 @@ function draw() {
                             element[0] - squareDistance * 0.2 < coord[0] &&
                             element[1] - squareDistance * 0.2 < coord[1] &&
                             element[1] + squareDistance * 0.2 > coord[1]) {
+                                //Game over!
                                 tetraminos = [];
                             }
                     });
@@ -62,7 +62,9 @@ function draw() {
     //Update position
     //Draw tetramino
     tetraminos.forEach(element => {
-        element.update(squareDistance);
+        if (element.falling) {
+           // element.update(squareDistance);
+        }
         element.draw(squareHeight, field);
     });
 
@@ -73,6 +75,7 @@ function draw() {
         } else {
             tetraminos[tetraminos.length - 1].falling = false;
             //BOOM TETRIS
+            removeRow();
         }
         fallTimer = 1;
     }
@@ -88,12 +91,10 @@ function keyPressed() {
     }
     if (keyCode === LEFT_ARROW && leftFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].moveLeft(squareDistance);
-        tetraminos[tetraminos.length-1].update(squareDistance);
 
     }
     if (keyCode === RIGHT_ARROW && rightFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].moveRight(squareDistance);
-        tetraminos[tetraminos.length-1].update(squareDistance);
     }
     if (keyCode === 88 && rotationRightFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].rotationRight();
@@ -127,21 +128,70 @@ function windowResized() {
 
     tetraminos.forEach(element => {
         element.updatePosition(oldSquareDistance, squareDistance, oldField, field);
-        element.update(squareDistance);
     });
 }
 
 //other function
+function spawnTetramino(x, y, squareDistance) {
+    let rnd = Math.ceil(Math.random()*7);
+    
+    if (rnd == 1) {
+        tetraminos.push(new TTetramino(x, y, squareDistance));
+    } else if (rnd == 2) {
+        tetraminos.push(new OTetramino(x, y, squareDistance));
+    } else if (rnd == 3) {
+        tetraminos.push(new JTetramino(x, y, squareDistance));
+    } else if (rnd == 4) {
+        tetraminos.push(new LTetramino(x, y, squareDistance));
+    } else if (rnd == 5) {
+        tetraminos.push(new ZTetramino(x, y, squareDistance));
+    } else if (rnd == 6) {
+        tetraminos.push(new STetramino(x, y, squareDistance));
+    } else if (rnd == 7) {
+        tetraminos.push(new ITetramino(x, y, squareDistance));
+    }
+}
 
 function scaleField() {
-    scale = (height / 250);
+    scale = Math.round(height / 290);
+    print(scale);
     squareHeight = 10 * scale;
     squareDistance = squareHeight + 1;
 
     field.height = (squareHeight * 20) + 21;
-    field.width = field.height / 2;
+    field.width = (squareHeight * 10) + 11;
     field.x = width / 2 - field.width / 2;
-    field.y = 10;
+    field.y = height / 2 - field.height / 2;
+}
+
+function removeRow() {
+    let allYValues = {};
+
+    tetraminos.forEach(tetramino => {
+        tetramino.coords.forEach(coord => {
+            if (coord[1].toFixed(0) in allYValues) {
+                allYValues[coord[1].toFixed(0)]++;
+            } else {
+                allYValues[coord[1].toFixed(0)] = 1;
+            }
+        });
+    });
+    print(allYValues);
+    Object.keys(allYValues).forEach(key => {
+        if (allYValues[key] >= 10) {
+            for (let j = 0; j < tetraminos.length; j++) {
+                for (let i = 0; i < tetraminos[j].coords.length; i++) {
+                    if (tetraminos[j].coords[i][1].toFixed(0) == key) {
+                        tetraminos[j].coords.splice(i, 1);
+                        i--;
+                        
+                    } else if (tetraminos[j].coords[i][1] < key){
+                        tetraminos[j].coords[i][1] += squareDistance;
+                    }
+                }
+            }
+        }
+    });
 }
 
 function downFree(fallingTetramino, squareDistance) {
@@ -176,7 +226,7 @@ function rightFree(fallingTetramino, squareDistance) {
     let isRightFree = true;
 
     fallingTetramino.coords.forEach(element => {
-        if (element[0] + squareDistance + 1 >= field.x + field.width) {
+        if (element[0] + squareDistance * 1.5 >= field.x + field.width) {
             isRightFree = false;
         }
 
@@ -203,7 +253,7 @@ function leftFree(fallingTetramino, squareDistance) {
     let isLeftFree = true;
 
     fallingTetramino.coords.forEach(element => {
-        if (element[0] - 1 <= field.x) {
+        if (element[0] - squareDistance * 0.5 <= field.x) {
             isLeftFree = false;
         }
 
@@ -222,7 +272,7 @@ function leftFree(fallingTetramino, squareDistance) {
             }
         });
     });
-    
+    print(isLeftFree);
     return isLeftFree;
 }
 
@@ -231,8 +281,9 @@ function rotationRightFree(fallingTetramino, squareDistance) {
     let rotatedCoords = fallingTetramino.rotatedCoordsRight();
 
     rotatedCoords.forEach(element => {
-        if (element[0] > field.x + field.width || 
-            element[0] < field.x) {
+        if (element[0] >= field.x + field.width || 
+            element[0] <= field.x ||
+            element[1] >= field.y + field.height) {
             rotationFree = false;
         }
 
@@ -259,8 +310,9 @@ function rotationLeftFree(fallingTetramino, squareDistance) {
     let rotatedCoords = fallingTetramino.rotatedCoordsLeft();
 
     rotatedCoords.forEach(element => {
-        if (element[0] > field.x + field.width || 
-            element[0] < field.x) {
+        if (element[0] >= field.x + field.width || 
+            element[0] <= field.x ||
+            element[1] >= field.y + field.height) {
             rotationFree = false;
         }
 

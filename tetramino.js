@@ -7,37 +7,54 @@ class Tetramino {
         this.rotations;
     }
 
-    moveDown(gridSize) {
-        this.y += gridSize;
+    moveDown(squareDistance) {
+        this.rotations.forEach(rotation => {
+            rotation.forEach(element => {
+                element[1] += squareDistance;   
+            });
+        });
+        //this.y += squareDistance;
     }
 
-    moveRight(gridSize) {
-        this.x += gridSize;
+    moveRight(squareDistance) {
+        this.rotations.forEach(rotation => {
+            rotation.forEach(element => {
+                element[0] += squareDistance;   
+            });
+        });
+        //this.x += squareDistance;
     }
 
-    moveLeft(gridSize) {
-        this.x -= gridSize;
+    moveLeft(squareDistance) {
+        this.rotations.forEach(rotation => {
+            rotation.forEach(element => {
+                element[0] -= squareDistance;   
+            });
+        });
+        //this.x -= squareDistance;
     }
 
     draw(squareHeight, field) {
-        strokeWeight(0)
+        strokeWeight(0);
         //stroke(255, 255, 255)
-        fill(255, 0, 0)
+        this.color();
 
         this.coords.forEach(element => {
-            if (element[0] > field.x && element[1] > field.y) {
-                square(element[0], element[1], squareHeight)
+            if (element[1] > field.y) {
+                square(element[0], element[1], squareHeight);
             }
         });
     }
 
     updatePosition(oldSquareDistance, squareDistance, oldField, field) {
 
-        let xCells = (this.x - (oldField.x + 1)) / oldSquareDistance;
-        let yCells = (this.y - (oldField.y + 1)) / oldSquareDistance;
-
-        this.x = (field.x + 1) + (xCells * squareDistance);
-        this.y = (field.y + 1) + (yCells * squareDistance);
+        this.coords.forEach(element => {
+            let xCells = (element[0] - (oldField.x + 1)) / oldSquareDistance;
+            let yCells = (element[1] - (oldField.y + 1)) / oldSquareDistance;
+            
+            element[0] = (field.x + 1) + (xCells * squareDistance);
+            element[1] = (field.y + 1) + (yCells * squareDistance);
+        }); 
     }
 
     rotationRight() {
@@ -46,6 +63,7 @@ class Tetramino {
         } else {
             this.rotationState += 1;
         }
+        this.coords = this.rotations[this.rotationState];
     }
     rotationLeft() {
         if (this.rotationState <= 0) {
@@ -53,6 +71,7 @@ class Tetramino {
         } else {
             this.rotationState -= 1;
         }
+        this.coords = this.rotations[this.rotationState];
     }
     rotatedCoordsRight() {
         this.rotationRight();
@@ -72,10 +91,6 @@ class TTetramino extends Tetramino {
     constructor(x, y, squareDistance) {
         super(x, y);
 
-        this.update(squareDistance);
-    }
-
-    update(squareDistance) {
         this.rotations = [
             [
                 [this.x, this.y],
@@ -104,5 +119,244 @@ class TTetramino extends Tetramino {
         ];
 
         this.coords = this.rotations[this.rotationState];
+    }
+
+    color() { 
+        return fill(204,34,0);
+    }
+}
+
+class OTetramino extends Tetramino {
+    constructor(x, y, squareDistance) {
+        super(x, y);
+
+        this.rotations = [
+            [
+                [this.x, this.y],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ]
+        ];
+
+        
+        this.coords = this.rotations[this.rotationState];
+    }
+
+    color() { 
+        return fill(0, 128, 128);
+    }
+}
+
+class JTetramino extends Tetramino {
+    constructor(x, y, squareDistance) {
+        super(x, y);
+
+        this.rotations = [
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x + squareDistance, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y + squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x - squareDistance, this.y],
+                [this.x - squareDistance, this.y - squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y - squareDistance],
+                [this.x, this.y + squareDistance]
+            ]
+        ];
+
+        this.coords = this.rotations[this.rotationState];
+    }
+
+    color() { 
+        return fill(255,187,51);
+    }
+}
+
+class LTetramino extends Tetramino {
+    constructor(x, y, squareDistance) {
+        super(x, y);
+
+        this.rotations = [
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x - squareDistance, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y - squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y + squareDistance],
+                [this.x, this.y + squareDistance]
+            ]
+        ];
+
+        this.coords = this.rotations[this.rotationState];
+    }
+
+    color() { 
+        return fill(51, 0, 77);
+    }
+}
+
+class ZTetramino extends Tetramino {
+    constructor(x, y, squareDistance) {
+        super(x, y);
+
+        this.rotations = [
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y + squareDistance],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y + squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y + squareDistance],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y + squareDistance]
+            ]
+        ];
+
+        this.coords = this.rotations[this.rotationState];
+    }
+
+    color() { 
+        return fill(153,255,170);
+    }
+}
+
+class STetramino extends Tetramino {
+    constructor(x, y, squareDistance) {
+        super(x, y);
+
+        this.rotations = [
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y + squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x + squareDistance, this.y + squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x, this.y + squareDistance],
+                [this.x - squareDistance, this.y + squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x + squareDistance, this.y],
+                [this.x + squareDistance, this.y + squareDistance]
+            ]
+        ];
+
+        this.coords = this.rotations[this.rotationState];
+    }
+
+    color() { 
+        return fill(77,166,255);
+    }
+}
+
+class ITetramino extends Tetramino {
+    constructor(x, y, squareDistance) {
+        super(x, y);
+
+        this.rotations = [
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x - squareDistance, this.y],
+                [this.x - squareDistance - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x, this.y - squareDistance - squareDistance],
+                [this.x, this.y + squareDistance]
+            ],
+            [
+                [this.x, this.y],
+                [this.x + squareDistance, this.y],
+                [this.x - squareDistance, this.y],
+                [this.x - squareDistance - squareDistance, this.y]
+            ],
+            [
+                [this.x, this.y],
+                [this.x, this.y - squareDistance],
+                [this.x, this.y - squareDistance - squareDistance],
+                [this.x, this.y + squareDistance]
+            ]
+        ];
+
+        this.coords = this.rotations[this.rotationState];
+    }
+
+    color() { 
+        return fill(255,179,230);
     }
 }
