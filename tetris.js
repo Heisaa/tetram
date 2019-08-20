@@ -95,6 +95,7 @@ function draw() {
 
 }
 
+//Keyboard controlls
 function keyPressed() {
     if (keyCode === DOWN_ARROW) {
         if (level <= 28) {
@@ -103,14 +104,12 @@ function keyPressed() {
     }
     if (keyCode === LEFT_ARROW && leftFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].moveLeft(squareDistance);
-
     }
     if (keyCode === RIGHT_ARROW && rightFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].moveRight(squareDistance);
     }
     if (keyCode === 88 && rotationRightFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].rotationRight();
-        //tetraminos[tetraminos.length-1].update(squareDistance);
     }
     if (keyCode === 90 && rotationLeftFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].rotationLeft();
@@ -121,6 +120,19 @@ function keyPressed() {
 function keyReleased() {
     if (keyCode === DOWN_ARROW) {
         fallSpeed = resetFallSpeed;
+    }
+}
+
+//Touch controlls
+function touchEnded() {
+    let left = mouseX < field.x && mouseY < field.y + field.height;
+    let right = mouseX > field.x + field.width && mouseY < field.y + field.height;
+
+    if (left && leftFree(tetraminos[tetraminos.length-1], squareDistance)) {
+        tetraminos[tetraminos.length-1].moveLeft(squareDistance);
+    }
+    if (right && rightFree(tetraminos[tetraminos.length-1], squareDistance)) {
+        tetraminos[tetraminos.length-1].moveRight(squareDistance);
     }
 }
 
