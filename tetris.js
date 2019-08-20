@@ -15,8 +15,13 @@ const field = {
 
 let tetraminos = [];
 let fallTimer = 1;
-let fallSpeed = 40;
+let fallSpeed = 23;
 let resetFallSpeed = fallSpeed;
+let score = 0;
+let startLevel = 5;
+let level = startLevel;
+let clearedLines = 0;
+let speedLevels = [48,43,38,33,28,23,18,13,8,6,5,5,5,4,4,4,3,3,3,2,2,2,2,2,2,2,2,2,2,1]
 
 let scale, squareHeight, squareDistance;
 
@@ -36,6 +41,12 @@ function draw() {
     background(0);
 
     field.draw();
+
+    textSize(20);
+    fill(255,255,255);
+    stroke(255);
+    text("score:" + score, 10 ,30);
+    text("level:" + level, 10, 60);
 
     //Create new tetramino
     if (tetraminos[tetraminos.length - 1] == undefined || tetraminos[tetraminos.length - 1].falling == false) {
@@ -74,7 +85,6 @@ function draw() {
             tetraminos[tetraminos.length - 1].moveDown(squareDistance);
         } else {
             tetraminos[tetraminos.length - 1].falling = false;
-            //BOOM TETRIS
             removeRow();
         }
         fallTimer = 1;
@@ -87,7 +97,9 @@ function draw() {
 
 function keyPressed() {
     if (keyCode === DOWN_ARROW) {
-        fallSpeed = 10;
+        if (level <= 28) {
+            fallSpeed = fallSpeed * 0.5;
+        }
     }
     if (keyCode === LEFT_ARROW && leftFree(tetraminos[tetraminos.length-1], squareDistance)) {
         tetraminos[tetraminos.length-1].moveLeft(squareDistance);
@@ -164,8 +176,22 @@ function scaleField() {
     field.y = height / 2 - field.height / 2;
 }
 
+function advanceLevel() {
+    if (clearedLines >= level * 10 + 10 || max(100,level * 10 - 50)) {
+        level += 1;
+    }
+    if (level >= 30) {
+        fallSpeed = 1;
+        resetFallSpeed = fallSpeed;
+    } else {
+        fallSpeed = speedLevels[level];
+        resetFallSpeed = fallSpeed;
+    }
+}
+
 function removeRow() {
     let allYValues = {};
+    let rowsToRemove = 0;
 
     tetraminos.forEach(tetramino => {
         tetramino.coords.forEach(coord => {
@@ -179,6 +205,7 @@ function removeRow() {
     print(allYValues);
     Object.keys(allYValues).forEach(key => {
         if (allYValues[key] >= 10) {
+            rowsToRemove += 1;
             for (let j = 0; j < tetraminos.length; j++) {
                 for (let i = 0; i < tetraminos[j].coords.length; i++) {
                     if (tetraminos[j].coords[i][1].toFixed(0) == key) {
@@ -192,6 +219,19 @@ function removeRow() {
             }
         }
     });
+    //Add score
+    if (rowsToRemove == 1) {
+        score += 40 * (level + 1);
+    } else if (rowsToRemove == 2) {
+        score += 100 * (level + 1);
+    } else if (rowsToRemove == 3) {
+        score += 300 * (level + 1);
+    } else if (rowsToRemove == 4) {
+        //BOOM TETRIS
+        score += 1200 * (level + 1);
+    }
+
+    clearedLines += rowsToRemove;
 }
 
 function downFree(fallingTetramino, squareDistance) {
